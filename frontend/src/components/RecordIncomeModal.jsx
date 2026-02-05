@@ -80,20 +80,21 @@ function RecordIncomeModal({ onClose, onSuccess }) {
         <div className="modal-row">
           <div>
             <label>Category</label>
-               <select
+            <input
               className="modal-input"
+              list="income-categories"
+              placeholder="Enter or select category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              style={{ color: category ? 'black' : 'gray' }} // placeholder gray, selected black
-            >
-              <option value="" disabled hidden>
-                Select category
-              </option>
-              <option>Salary</option>
-              <option>Freelance</option>
-              <option>Business</option>
-              <option>Other</option>
-            </select>
+            />
+            <datalist id="income-categories">
+              <option value="Salary" />
+              <option value="Freelance" />
+              <option value="Business" />
+              <option value="Investment" />
+              <option value="Gift" />
+              <option value="Other" />
+            </datalist>
           </div>
 
           <div>

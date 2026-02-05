@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RefreshCw, Eye, EyeOff } from 'lucide-react';
 import '../index.css';
 
 function ForgotPasswordForm() {
@@ -80,33 +81,67 @@ function ForgotPasswordForm() {
 
             <label>Captcha</label>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
-              <input
-                type="text"
-                value={captcha}
-                disabled
-                className="filled"
-                style={{
-                  flex: 1,
-                  height: '50px',
-                  textAlign: 'center',
-                  fontWeight: '600',
-                }}
-              />
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{
+                flex: 1,
+                height: '52px',
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <span style={{
+                  fontSize: '22px',
+                  fontWeight: '800',
+                  letterSpacing: '8px',
+                  fontStyle: 'italic',
+                  userSelect: 'none',
+                  opacity: 0.8,
+                  color: '#fff'
+                }}>
+                  {captcha}
+                </span>
+                {/* CLUMSY LINE */}
+                <div style={{
+                  position: 'absolute',
+                  width: '120%',
+                  height: '2px',
+                  background: 'rgba(255,255,255,0.4)',
+                  transform: 'rotate(-5deg)',
+                  pointerEvents: 'none'
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  width: '120%',
+                  height: '1px',
+                  background: 'rgba(255,255,255,0.3)',
+                  transform: 'rotate(8deg)',
+                  pointerEvents: 'none'
+                }} />
+              </div>
 
               <button
                 type="button"
+                className="refresh-btn"
                 onClick={generateCaptcha}
                 style={{
-                  flex: 1,
-                  height: '50px',
+                  background: 'rgba(255,255,255,0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '52px',
+                  height: '52px',
                   borderRadius: '10px',
-                  background: 'rgba(0,0,0,0.35)',
-                  color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.25)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  cursor: 'pointer',
+                  color: '#fff'
                 }}
               >
-                Refresh
+                <RefreshCw size={20} />
               </button>
             </div>
 
@@ -180,10 +215,10 @@ function ForgotPasswordForm() {
               />
               <button
                 type="button"
-                className="eye-btn"
+                className="password-toggle-btn"
                 onClick={() => setShowNewPassword(!showNewPassword)}
               >
-                👁
+                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 
@@ -196,12 +231,12 @@ function ForgotPasswordForm() {
               />
               <button
                 type="button"
-                className="eye-btn"
+                className="password-toggle-btn"
                 onClick={() =>
                   setShowConfirmPassword(!showConfirmPassword)
                 }
               >
-                👁
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 

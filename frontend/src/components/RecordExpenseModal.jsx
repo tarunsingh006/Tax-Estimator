@@ -77,20 +77,21 @@ function RecordExpenseModal({ onClose, onSuccess }) {
         <div className="modal-row">
           <div>
             <label>Category</label>
-            <select
+            <input
               className="modal-input"
+              list="expense-categories"
+              placeholder="Enter or select category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              style={{ color: category ? 'black' : 'gray' }} // placeholder gray, selected black
-            >
-              <option value="" disabled hidden>
-                Select category
-              </option>
-              <option value="Food">Food</option>
-              <option value="Transport">Transport</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Other">Other</option>
-            </select>
+            />
+            <datalist id="expense-categories">
+              <option value="Food" />
+              <option value="Transport" />
+              <option value="Utilities" />
+              <option value="Shopping" />
+              <option value="Health" />
+              <option value="Other" />
+            </datalist>
           </div>
 
           <div>

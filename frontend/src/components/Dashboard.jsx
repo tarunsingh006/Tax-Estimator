@@ -1,5 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  PlusCircle,
+  MinusCircle,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  Target
+} from 'lucide-react';
 
 import { getTransactions } from '../api/transactions';
 
@@ -68,38 +78,20 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button
-              className="logout-small"
+              className="action-btn record-income"
               onClick={() => setShowIncomeModal(true)}
             >
-              <span
-                style={{
-                  background: '#1fa971',
-                  borderRadius: '50%',
-                  padding: '2px 7px',
-                  marginRight: '6px',
-                }}
-              >
-                +
-              </span>
+              <PlusCircle size={18} />
               Record Income
             </button>
 
             <button
-              className="logout-small"
+              className="action-btn record-expense"
               onClick={() => setShowExpenseModal(true)}
             >
-              <span
-                style={{
-                  background: '#e5533d',
-                  borderRadius: '50%',
-                  padding: '2px 8px',
-                  marginRight: '6px',
-                }}
-              >
-                −
-              </span>
+              <MinusCircle size={18} />
               Record Expense
             </button>
           </div>
@@ -110,50 +102,49 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
           {[
             {
               label: 'Monthly Income',
-              value: `₹${totalIncome.toLocaleString()}`,
-              icon: '⬆',
-              bg: '#dcfce7',
-              color: '#16a34a',
+              value: `₹${totalIncome.toLocaleString()} `,
+              icon: <TrendingUp size={24} />,
+              bg: 'rgba(52, 211, 153, 0.15)', // emerald-400 with opacity
+              color: '#34d399',
+              trend: 'up'
             },
             {
               label: 'Monthly Expenses',
-              value: `₹${totalExpense.toLocaleString()}`,
-              icon: '⬇',
-              bg: '#fee2e2',
-              color: '#dc2626',
+              value: `₹${totalExpense.toLocaleString()} `,
+              icon: <TrendingDown size={24} />,
+              bg: 'rgba(248, 113, 113, 0.15)', // red-400 with opacity
+              color: '#f87171',
+              trend: 'down'
             },
             {
               label: 'Estimated Tax Due',
               value: '₹0.00',
-              icon: '⚠',
-              bg: '#fef9c3',
-              color: '#ca8a04',
+              icon: <Wallet size={24} />,
+              bg: 'rgba(251, 191, 36, 0.15)', // amber-400 with opacity
+              color: '#fbbf24',
+              trend: 'neutral'
             },
             {
               label: 'Savings Rate',
               value: '0%',
-              icon: '🎯',
-              bg: '#f3f4f6',
-              color: '#374151',
+              icon: <Target size={24} />,
+              bg: 'rgba(96, 165, 250, 0.15)', // blue-400 with opacity
+              color: '#60a5fa',
+              trend: 'up'
             },
           ].map((item, i) => (
-            <div className="stat-card" key={i} style={{ position: 'relative' }}>
-              <span
+            <div
+              className="stat-card"
+              key={i}
+              style={{ position: 'relative', cursor: item.label === 'Estimated Tax Due' ? 'pointer' : 'default' }}
+              onClick={() => {
+                if (item.label === 'Estimated Tax Due') navigate('/tax-estimator');
+              }}
+            >
+              <span className="stat-card-icon"
                 style={{
-                  position: 'absolute',
-                  right: '16px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '50%',
                   backgroundColor: item.bg,
                   color: item.color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '22px',
-                  fontWeight: 'bold',
                 }}
               >
                 {item.icon}
@@ -161,7 +152,10 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
 
               <p>{item.label}</p>
               <h3>{item.value}</h3>
-              <span>0% from last month</span>
+              <span className="trend-indicator">
+                {item.trend === 'up' ? <ArrowUpCircle size={12} /> : item.trend === 'down' ? <ArrowDownCircle size={12} /> : null}
+                0% from last month
+              </span>
             </div>
           ))}
         </div>
@@ -214,7 +208,12 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
                     <td>{txn.category}</td>
                     <td>₹{Number(txn.amount).toLocaleString()}</td>
                     <td className="txn-type-cell">
-                      <span className={`txn-type-badge ${txn.type}`}>
+                      <span className={`txn-type-badge ${txn.type.toLowerCase()}`}>
+                        {txn.type.toLowerCase() === 'income' ? (
+                          <ArrowUpCircle size={14} style={{ marginRight: '4px' }} />
+                        ) : (
+                          <ArrowDownCircle size={14} style={{ marginRight: '4px' }} />
+                        )}
                         {txn.type}
                       </span>
                     </td>

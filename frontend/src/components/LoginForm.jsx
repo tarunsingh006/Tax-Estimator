@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import '../index.css';
 import api from '../api/axios';
 
@@ -85,10 +86,10 @@ function LoginForm({ onLoginSuccess }) {
 
           <button
             type="button"
-            className="eye-btn"
+            className="password-toggle-btn"
             onClick={() => setShowPassword(!showPassword)}
           >
-            👁
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
 

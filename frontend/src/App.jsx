@@ -9,6 +9,9 @@ import ForgotPasswordForm from './components/ForgotPasswordForm';
 import Dashboard from './components/Dashboard';
 import TransactionsPage from './components/TransactionsPage';
 import Budgets from './components/Budgets';
+import TaxEstimator from './components/TaxEstimator';
+import Reports from './components/Reports';
+import Settings from './components/Settings'; // ✅ ADDED
 import DashboardLayout from './components/DashboardLayout';
 
 import Toast from './components/Toast.jsx';
@@ -78,7 +81,6 @@ function App() {
             />
 
             <Route path="/forgot" element={<ForgotPasswordForm />} />
-
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
@@ -88,7 +90,7 @@ function App() {
           {/* Redirect root */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
 
-          {/* Layout Route (SIDEBAR LIVES HERE) */}
+          {/* Layout Route */}
           <Route
             element={
               <DashboardLayout
@@ -103,15 +105,15 @@ function App() {
               element={<Dashboard userName={user.name} />}
             />
 
-            <Route
-              path="/transactions"
-              element={<TransactionsPage />}
-            />
+            <Route path="/transactions" element={<TransactionsPage />} />
 
-            <Route
-              path="/budgets"
-              element={<Budgets />}
-            />
+            <Route path="/budgets" element={<Budgets />} />
+
+            <Route path="/tax-estimator" element={<TaxEstimator />} />
+
+            <Route path="/reports" element={<Reports />} />
+
+            <Route path="/settings" element={<Settings />} /> {/* ✅ FIX */}
           </Route>
 
           <Route path="*" element={<Navigate to="/dashboard" />} />

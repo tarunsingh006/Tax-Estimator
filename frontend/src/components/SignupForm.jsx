@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import '../index.css';
 import api from '../api/axios';
 
@@ -101,10 +102,10 @@ function SignupForm({ onSignupSuccess }) {
               />
               <button
                 type="button"
-                className="eye-btn"
+                className="password-toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                👁
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
@@ -131,12 +132,12 @@ function SignupForm({ onSignupSuccess }) {
               />
               <button
                 type="button"
-                className="eye-btn"
+                className="password-toggle-btn"
                 onClick={() =>
                   setShowConfirmPassword(!showConfirmPassword)
                 }
               >
-                👁
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
@@ -153,16 +154,26 @@ function SignupForm({ onSignupSuccess }) {
 
           <div>
             <label>Country</label>
-            <select
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-            >
-              <option value="" disabled>Select your country</option>
-              <option>India</option>
-              <option>USA</option>
-              <option>UK</option>
-            </select>
+            <div className="input-group">
+              <input
+                name="country"
+                list="country-options"
+                value={formData.country}
+                onChange={handleChange}
+                placeholder="Enter your country"
+              />
+            </div>
+            <datalist id="country-options">
+              <option value="USA" />
+              <option value="India" />
+              <option value="UK" />
+              <option value="Canada" />
+              <option value="Australia" />
+              <option value="Singapore" />
+              <option value="UAE" />
+              <option value="Germany" />
+              <option value="France" />
+            </datalist>
           </div>
 
           <div>

@@ -6,11 +6,16 @@ import {
   FileText,
   BarChart3,
   Wallet,
+  Settings,
 } from 'lucide-react';
 
 import '../index.css';
 
-function DashboardLayout({ onLogout, userName = 'User', userEmail = 'user@email.com' }) {
+function DashboardLayout({
+  onLogout,
+  userName = 'User',
+  userEmail = 'user@email.com',
+}) {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('dashboard');
 
@@ -42,7 +47,6 @@ function DashboardLayout({ onLogout, userName = 'User', userEmail = 'user@email.
               <RefreshCcw size={18} /> Transactions
             </li>
 
-            {/* ✅ SAME BUDGET ICON – NOT CHANGED */}
             <li
               className={activeNav === 'budgets' ? 'active' : ''}
               onClick={() => {
@@ -53,20 +57,43 @@ function DashboardLayout({ onLogout, userName = 'User', userEmail = 'user@email.
               <Wallet size={18} /> Budgets
             </li>
 
-            <li>
+            <li
+              className={activeNav === 'tax' ? 'active' : ''}
+              onClick={() => {
+                setActiveNav('tax');
+                navigate('/tax-estimator');
+              }}
+            >
               <FileText size={18} /> Tax Estimator
             </li>
 
-            <li>
+            <li
+              className={activeNav === 'reports' ? 'active' : ''}
+              onClick={() => {
+                setActiveNav('reports');
+                navigate('/reports');
+              }}
+            >
               <BarChart3 size={18} /> Reports
+            </li>
+
+            {/* ✅ SETTINGS FIXED – now same as other nav items */}
+            <li
+              className={activeNav === 'settings' ? 'active' : ''}
+              onClick={() => {
+                setActiveNav('settings');
+                navigate('/settings');
+              }}
+            >
+              <Settings size={18} /> Settings
             </li>
           </ul>
         </div>
 
+        {/* ===== USER SECTION ===== */}
         <div className="sidebar-user">
           <p className="sidebar-username">{userName}</p>
           <p className="sidebar-email">{userEmail}</p>
-          <p className="sidebar-settings">Settings</p>
 
           <button className="sidebar-logout" onClick={onLogout}>
             Logout

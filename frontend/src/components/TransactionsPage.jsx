@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Edit2, Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { getTransactions, deleteTransaction } from '../api/transactions';
 
 import '../index.css';
@@ -70,19 +71,27 @@ function TransactionsPage({
                   <td>{txn.category}</td>
                   <td>₹{Number(txn.amount).toLocaleString()}</td>
                   <td>
-                    <span className={`txn-type ${txn.type}`}>
+                    <span className={`txn-type-badge ${txn.type.toLowerCase()}`}>
+                      {txn.type.toLowerCase() === 'income' ? (
+                        <ArrowUpCircle size={14} style={{ marginRight: '4px' }} />
+                      ) : (
+                        <ArrowDownCircle size={14} style={{ marginRight: '4px' }} />
+                      )}
                       {txn.type}
                     </span>
                   </td>
 
                   <td style={{ textAlign: 'right' }}>
                     <div className="txn-actions">
-                      <button className="txn-edit-btn">Edit</button>
+                      <button className="txn-edit-btn" title="Edit">
+                        <Edit2 size={16} />
+                      </button>
                       <button
                         className="txn-delete-btn"
                         onClick={() => handleDelete(txn.id)}
+                        title="Delete"
                       >
-                        Delete
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
