@@ -1,6 +1,7 @@
 import '../index.css';
 import { useState } from "react";
 import { addTransaction } from "../api/transactions";
+import { showToast } from './Toast';
 
 function RecordIncomeModal({ onClose, onSuccess }) {
 
@@ -14,9 +15,8 @@ function RecordIncomeModal({ onClose, onSuccess }) {
     try {
       const userId = localStorage.getItem("userId");
 
-      // ✅ Validation
       if (!description || !amount || !category || !date) {
-        alert("Please fill all required fields");
+        showToast("Required", "Please fill all required fields", "info");
         return;
       }
 
@@ -32,18 +32,13 @@ function RecordIncomeModal({ onClose, onSuccess }) {
       };
 
       await addTransaction(payload);
-
-      alert("Income added successfully ✅");
-
-      // refresh dashboard list
+      showToast("Success", "Income added successfully ✅", "success");
       onSuccess && onSuccess();
-
-      // close modal
       onClose();
 
     } catch (error) {
       console.error("Save income error:", error);
-      alert("Failed to save income ❌");
+      showToast("Error", "Failed to save income ❌", "error");
     } finally {
       setLoading(false);
     }
@@ -51,11 +46,11 @@ function RecordIncomeModal({ onClose, onSuccess }) {
 
   return (
     <div className="modal-backdrop">
-      <div className="modal-card glass modal-relative">
-
-        <button className="modal-close-btn" onClick={onClose}>✕</button>
-
-        <h3 className="modal-title">Record New Income</h3>
+      <div className="modal-card">
+        <div className="modal-header">
+          <h3>Record New Income</h3>
+          <button onClick={onClose}>✕</button>
+        </div>
         <p className="modal-sub">
           Add details about your income to track your finances better.
         </p>
@@ -121,7 +116,6 @@ function RecordIncomeModal({ onClose, onSuccess }) {
             {loading ? "Saving..." : "Save"}
           </button>
         </div>
-
       </div>
     </div>
   );

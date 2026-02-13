@@ -8,8 +8,23 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  Target
+  Target,
+  BarChart2,
+  PieChart as PieChartIcon
 } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 import { getTransactions } from '../api/transactions';
 
@@ -57,6 +72,68 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
     setTotalIncome(income);
     setTotalExpense(expense);
   }, [transactions]);
+
+  // Preparing data for Bar Chart (Last 6 Months)
+  const getBarData = () => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentYear = new Date().getFullYear();
+    const last6Months = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const monthLabel = months[d.getMonth()];
+      const year = d.getFullYear();
+
+      const income = transactions
+        .filter(t => t.type === 'income' && new Date(t.date).getMonth() === d.getMonth() && new Date(t.date).getFullYear() === year)
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      const expense = transactions
+        .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === d.getMonth() && new Date(t.date).getFullYear() === year)
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      last6Months.push({ name: monthLabel, income, expense });
+    }
+    return last6Months;
+  };
+
+  // Preparing data for Pie Chart (Category Breakdown)
+  const getPieData = () => {
+    const categoryMap = {};
+    const COLORS = ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#f472b6'];
+
+    transactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        categoryMap[t.category] = (categoryMap[t.category] || 0) + Number(t.amount);
+      });
+
+    return Object.keys(categoryMap).map((cat, index) => ({
+      name: cat,
+      value: categoryMap[cat],
+      color: COLORS[index % COLORS.length]
+    })).sort((a, b) => b.value - a.value);
+  };
+
+  const barData = getBarData();
+  const pieData = getPieData();
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-chart-tooltip">
+          <p className="tooltip-label">{label}</p>
+          {payload.map((entry, index) => (
+            <p key={index} style={{ color: entry.color, fontSize: '13px', fontWeight: '600' }}>
+              {entry.name}: ₹{entry.value.toLocaleString()}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="dashboard-root">
@@ -163,13 +240,83 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
         {/* CHARTS */}
         <div className="chart-grid">
           <div className="chart-large">
-            <h4>Income vs Expenses</h4>
-            <div className="chart-placeholder">Bar chart</div>
+            <div className="chart-header">
+              <div className="chart-title-group">
+                <BarChart2 size={18} className="chart-title-icon" />
+                <h4>Income vs Expenses</h4>
+              </div>
+              <div className="chart-tabs">
+                <span className="chart-tab active">Year</span>
+                <span className="chart-tab">Quarter</span>
+                <span className="chart-tab">Month</span>
+              </div>
+            </div>
+            <div style={{ width: '100%', height: 260, marginTop: '20px' }}>
+              <ResponsiveContainer>
+                <BarChart data={barData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    hide
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                  <Bar dataKey="income" fill="#34d399" radius={[4, 4, 0, 0]} barSize={24} />
+                  <Bar dataKey="expense" fill="#f87171" radius={[4, 4, 0, 0]} barSize={24} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="chart-custom-legend">
+              <div className="legend-item"><span className="dot income"></span> Income</div>
+              <div className="legend-item"><span className="dot expense"></span> Expenses</div>
+            </div>
           </div>
 
           <div className="chart-small">
-            <h4>Expense Breakdown</h4>
-            <div className="chart-placeholder">Pie chart</div>
+            <div className="chart-header">
+              <div className="chart-title-group">
+                <PieChartIcon size={18} className="chart-title-icon" />
+                <h4>Expense Breakdown</h4>
+              </div>
+            </div>
+            <div style={{ width: '100%', height: 200, marginTop: '10px' }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="pie-legend-container">
+              {pieData.slice(0, 5).map((entry, index) => (
+                <div key={index} className="pie-legend-item">
+                  <div className="legend-left">
+                    <span className="legend-dot" style={{ backgroundColor: entry.color }}></span>
+                    <span className="legend-name">{entry.name}</span>
+                  </div>
+                  <span className="legend-value">
+                    {Math.round((entry.value / totalExpense) * 100) || 0}%
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

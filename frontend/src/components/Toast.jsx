@@ -1,35 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { CheckCircle, XCircle, Info, X } from 'lucide-react';
 
-const toastStyle = {
-  position: 'fixed',
-  bottom: '20px',
-  right: '20px',
-  backgroundColor: '#4BB543', // green
-  color: 'white',
-  padding: '12px 20px',
-  borderRadius: '8px',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-  fontWeight: 'bold',
-  zIndex: 1000,
-  animation: 'fadeInOut 3s',
+let toastIndex = 0;
+let observers = [];
+
+export const showToast = (title, message, type = 'success', duration = 4000) => {
+  const id = toastIndex++;
+  const toast = { id, title, message, type, duration };
+  observers.forEach((cb) => cb(toast));
 };
 
-export default function Toast({ message }) {
-  const [show, setShow] = useState(false);
+export default function Toast() {
+  const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
-    if (message) {
-      setShow(true);
-      const timer = setTimeout(() => setShow(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
+    const onToast = (toast) => {
+      setToasts((prev) => [...prev, toast]);
+      setTimeout(() => {
+        removeToast(toast.id);
+      }, toast.duration);
+    };
 
-  if (!show) return null;
+    observers.push(onToast);
+    return () => {
+      observers = observers.filter((cb) => cb !== onToast);
+    };
+  }, []);
+
+  const removeToast = (id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, out: true } : t))
+    );
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  };
 
   return (
-    <div style={toastStyle}>
-      {message}
+    <div className="toast-container">
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          className={`toast ${t.type} ${t.out ? 'toast-out' : ''}`}
+        >
+          <div className="toast-icon">
+            {t.type === 'success' && <CheckCircle size={20} color="#4ade80" />}
+            {t.type === 'error' && <XCircle size={20} color="#f87171" />}
+            {t.type === 'info' && <Info size={20} color="#60a5fa" />}
+          </div>
+          <div className="toast-content">
+            <div className="toast-title">{t.title}</div>
+            <div className="toast-message">{t.message}</div>
+          </div>
+          <div className="toast-close" onClick={() => removeToast(t.id)}>
+            <X size={16} />
+          </div>
+          <div
+            className="toast-progress"
+            style={{ animationDuration: `${t.duration}ms` }}
+          />
+        </div>
+      ))}
     </div>
   );
 }

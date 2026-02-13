@@ -12,8 +12,19 @@ export const addTransaction = async (data) => {
   return res.data;
 };
 
-// ✅ DELETE transaction (NEW – required for TransactionsPage)
+// ✅ DELETE transaction
 export const deleteTransaction = async (transactionId) => {
   const res = await api.delete(`/transactions/${transactionId}`);
+  return res.data;
+};
+
+// ✅ UPDATE transaction
+export const updateTransaction = async (id, data) => {
+  const res = await api.put(`/transactions/${id}`, data);
+  return res.data;
+};
+// ✅ GET summary for reports
+export const getTransactionSummary = async (userId) => {
+  const res = await api.get(`/transactions/summary/${userId}`);
   return res.data;
 };

@@ -2,17 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit2, Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { getTransactions, deleteTransaction } from '../api/transactions';
+import EditTransactionModal from './EditTransactionModal';
+import { showToast } from './Toast';
 
 import '../index.css';
 
-function TransactionsPage({
-  onLogout, // still passed but handled by layout
-  userName = 'User',
-  userEmail = 'user@email.com',
-}) {
-  const navigate = useNavigate();
-
+function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
+  const [editingTxn, setEditingTxn] = useState(null);
 
   const loadTransactions = async () => {
     try {
@@ -23,6 +20,7 @@ function TransactionsPage({
       setTransactions(data);
     } catch (err) {
       console.error('Failed to load transactions', err);
+      showToast('Error', 'Failed to load transactions', 'error');
     }
   };
 
@@ -31,14 +29,22 @@ function TransactionsPage({
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this transaction?')) return;
+    // confirmation alert remains as standard or could be custom modal, 
+    // but user asked for "attractive alerts" which usually refers to notifications.
+    if (!window.confirm('Are you sure you want to delete this transaction?')) return;
 
     try {
       await deleteTransaction(id);
+      showToast('Deleted', 'Transaction removed successfully', 'success');
       loadTransactions();
     } catch (err) {
       console.error('Delete failed', err);
+      showToast('Error', 'Failed to delete transaction', 'error');
     }
+  };
+
+  const handleEdit = (txn) => {
+    setEditingTxn(txn);
   };
 
   return (
@@ -53,7 +59,7 @@ function TransactionsPage({
               <th>Category</th>
               <th>Amount</th>
               <th>Type</th>
-              <th>Actions</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
 
@@ -68,7 +74,7 @@ function TransactionsPage({
               transactions.map((txn) => (
                 <tr key={txn.id}>
                   <td>{new Date(txn.date).toLocaleDateString()}</td>
-                  <td>{txn.category}</td>
+                  <td>{txn.category || 'Other'}</td>
                   <td>₹{Number(txn.amount).toLocaleString()}</td>
                   <td>
                     <span className={`txn-type-badge ${txn.type.toLowerCase()}`}>
@@ -83,7 +89,11 @@ function TransactionsPage({
 
                   <td style={{ textAlign: 'right' }}>
                     <div className="txn-actions">
-                      <button className="txn-edit-btn" title="Edit">
+                      <button
+                        className="txn-edit-btn"
+                        title="Edit"
+                        onClick={() => handleEdit(txn)}
+                      >
                         <Edit2 size={16} />
                       </button>
                       <button
@@ -101,6 +111,14 @@ function TransactionsPage({
           </tbody>
         </table>
       </div>
+
+      {editingTxn && (
+        <EditTransactionModal
+          txn={editingTxn}
+          onClose={() => setEditingTxn(null)}
+          onSuccess={loadTransactions}
+        />
+      )}
     </main>
   );
 }

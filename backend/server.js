@@ -7,15 +7,15 @@ const app = express();
    CORS (Node 25 SAFE)
 ======================= */
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
+   if (req.method === "OPTIONS") {
+      return res.sendStatus(204);
+   }
 
-  next();
+   next();
 });
 
 /* =======================
@@ -27,15 +27,15 @@ app.use(express.json());
    LOGGER
 ======================= */
 app.use((req, res, next) => {
-  console.log("➡️", req.method, req.url);
-  next();
+   console.log("➡️", req.method, req.url);
+   next();
 });
 
 /* =======================
    HEALTH CHECK (IMPORTANT)
 ======================= */
 app.get("/", (req, res) => {
-  res.send(`✅ Backend is running on port ${process.env.PORT}`);
+   res.send(`✅ Backend is running on port ${process.env.PORT}`);
 });
 
 /* =======================
@@ -46,12 +46,18 @@ app.get("/", (req, res) => {
 ======================= */
 const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const budgetRoutes = require("./routes/budgetRoutes");
+const taxRoutes = require("./routes/taxRoutes");
 
 console.log("✅ authRoutes loaded");
 console.log("🔥 Transaction routes loaded successfully");
+console.log("💰 Budget routes loaded successfully");
+console.log("📊 Tax routes loaded successfully");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/budgets", budgetRoutes);
+app.use("/api/taxes", taxRoutes);
 
 
 
@@ -61,10 +67,10 @@ app.use("/api/transactions", transactionRoutes);
 const authMiddleware = require("./middleware/authMiddleware");
 
 app.get("/api/protected", authMiddleware, (req, res) => {
-  res.json({
-    message: "Protected route accessed",
-    user: req.user
-  });
+   res.json({
+      message: "Protected route accessed",
+      user: req.user
+   });
 });
 
 /* =======================
@@ -73,5 +79,5 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+   console.log(`🚀 Server running on port ${PORT}`);
 });

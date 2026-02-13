@@ -1,6 +1,7 @@
 import '../index.css';
 import { useState } from "react";
 import { addTransaction } from "../api/transactions";
+import { showToast } from './Toast';
 
 function RecordExpenseModal({ onClose, onSuccess }) {
   const [description, setDescription] = useState("");
@@ -11,7 +12,7 @@ function RecordExpenseModal({ onClose, onSuccess }) {
 
   const handleSave = async () => {
     if (!description || !amount || !category || !date) {
-      alert("Please fill all required fields");
+      showToast("Required", "Please fill all required fields", "info");
       return;
     }
 
@@ -21,24 +22,20 @@ function RecordExpenseModal({ onClose, onSuccess }) {
       const userId = localStorage.getItem("userId");
 
       await addTransaction({
-        user_id: userId,     // ✅ correct key name
-        type: "expense",    // ✅ backend expects this
+        user_id: userId,
+        type: "expense",
         category,
         amount,
         date
       });
 
-      alert("Expense saved successfully ✅");
+      showToast("Success", "Expense saved successfully ✅", "success");
 
-      onSuccess(); // refresh dashboard
-      onClose();   // close modal
+      onSuccess();
+      onClose();
     } catch (error) {
       console.error("Expense Error:", error.response?.data || error.message);
-
-      alert(
-        error.response?.data?.message ||
-        "Backend rejected expense request ❌"
-      );
+      showToast("Error", error.response?.data?.message || "Failed to save expense", "error");
     } finally {
       setLoading(false);
     }
@@ -46,12 +43,11 @@ function RecordExpenseModal({ onClose, onSuccess }) {
 
   return (
     <div className="modal-backdrop">
-      <div className="modal-card glass modal-relative">
-        <button className="modal-close-btn" onClick={onClose}>
-          ✕
-        </button>
-
-        <h3 className="modal-title">Record New Expense</h3>
+      <div className="modal-card">
+        <div className="modal-header">
+          <h3>Record New Expense</h3>
+          <button onClick={onClose}>✕</button>
+        </div>
 
         <p className="modal-sub">
           Add details about your expense to track your spending better.

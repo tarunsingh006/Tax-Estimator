@@ -14,13 +14,12 @@ import Reports from './components/Reports';
 import Settings from './components/Settings'; // ✅ ADDED
 import DashboardLayout from './components/DashboardLayout';
 
-import Toast from './components/Toast.jsx';
+import Toast, { showToast } from './components/Toast.jsx';
 
 import './index.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -33,18 +32,13 @@ function App() {
     email: localStorage.getItem('userEmail') || '',
   };
 
-  const handleShowToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(''), 3000);
-  };
-
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    handleShowToast('Login Successful!');
+    showToast('Success', 'Login Successful!');
   };
 
   const handleLogout = () => {
-    handleShowToast('Logged out successfully!');
+    showToast('Info', 'Logged out successfully!');
     setTimeout(() => {
       localStorage.clear();
       setIsLoggedIn(false);
@@ -54,7 +48,7 @@ function App() {
   return (
     <>
       {/* UNIVERSAL TOAST */}
-      <Toast message={toastMessage} />
+      <Toast />
 
       {/* ---------- AUTH SCREENS ---------- */}
       {!isLoggedIn ? (
@@ -72,7 +66,8 @@ function App() {
               element={
                 <SignupForm
                   onSignupSuccess={() =>
-                    handleShowToast(
+                    showToast(
+                      'Success',
                       'Account created successfully! You can now login.'
                     )
                   }

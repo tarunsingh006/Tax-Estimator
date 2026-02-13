@@ -16,4 +16,20 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Handle expired tokens (401 Unauthorized)
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            console.warn("🔐 Session expired. Logging out...");
+            localStorage.clear();
+            // Optional: redirect to login if not already there
+            if (!window.location.pathname.startsWith('/login') && window.location.pathname !== '/') {
+                window.location.href = '/';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
