@@ -49,7 +49,7 @@ function RecordIncomeModal({ onClose, onSuccess }) {
       <div className="modal-card">
         <div className="modal-header">
           <h3>Record New Income</h3>
-          <button onClick={onClose}>✕</button>
+          <button className="modal-close-btn" onClick={onClose}>✕</button>
         </div>
         <p className="modal-sub">
           Add details about your income to track your finances better.

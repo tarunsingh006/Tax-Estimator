@@ -46,7 +46,7 @@ function RecordExpenseModal({ onClose, onSuccess }) {
       <div className="modal-card">
         <div className="modal-header">
           <h3>Record New Expense</h3>
-          <button onClick={onClose}>✕</button>
+          <button className="modal-close-btn" onClick={onClose}>✕</button>
         </div>
 
         <p className="modal-sub">

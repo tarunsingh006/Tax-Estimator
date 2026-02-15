@@ -49,6 +49,7 @@ function Settings() {
                   <label>Full Name</label>
                   <input
                     type="text"
+                    className="modal-input"
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                   />
@@ -57,6 +58,7 @@ function Settings() {
                   <label>Email Address</label>
                   <input
                     type="email"
+                    className="modal-input"
                     value={profile.email}
                     onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                   />
@@ -65,7 +67,7 @@ function Settings() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label>Currency</label>
-                  <select value={profile.currency} onChange={(e) => setProfile({ ...profile, currency: e.target.value })}>
+                  <select className="modal-input" value={profile.currency} onChange={(e) => setProfile({ ...profile, currency: e.target.value })}>
                     <option value="USD">USD - US Dollar</option>
                     <option value="EUR">EUR - Euro</option>
                     <option value="GBP">GBP - British Pound</option>
@@ -74,7 +76,7 @@ function Settings() {
                 </div>
                 <div>
                   <label>Language</label>
-                  <select value={profile.language} onChange={(e) => setProfile({ ...profile, language: e.target.value })}>
+                  <select className="modal-input" value={profile.language} onChange={(e) => setProfile({ ...profile, language: e.target.value })}>
                     <option value="English">English</option>
                     <option value="Spanish">Spanish</option>
                     <option value="French">French</option>
@@ -160,16 +162,16 @@ function Settings() {
             <div style={{ display: 'grid', gap: '20px' }}>
               <div>
                 <label>Current Password</label>
-                <input type="password" placeholder="••••••••" />
+                <input type="password" className="modal-input" placeholder="••••••••" />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label>New Password</label>
-                  <input type="password" placeholder="Enter new password" />
+                  <input type="password" className="modal-input" placeholder="Enter new password" />
                 </div>
                 <div>
                   <label>Confirm Password</label>
-                  <input type="password" placeholder="Confirm new password" />
+                  <input type="password" className="modal-input" placeholder="Confirm new password" />
                 </div>
               </div>
               <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px', marginTop: '12px' }}>

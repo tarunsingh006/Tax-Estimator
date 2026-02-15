@@ -149,6 +149,7 @@ function Budgets() {
                   value={form.category}
                   onChange={handleChange}
                   placeholder="Type or select category"
+                  className="modal-input"
                   required
                 />
                 <datalist id="categories">
@@ -169,6 +170,7 @@ function Budgets() {
                   value={form.amount}
                   onChange={handleChange}
                   placeholder="₹ 0.00"
+                  className="modal-input"
                   required
                 />
               </div>
@@ -181,14 +183,7 @@ function Budgets() {
                 name="month"
                 value={form.month}
                 onChange={handleChange}
-                style={{
-                  width: '100%',
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#fff',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                }}
+                className="modal-input"
                 required
               />
             </div>
@@ -201,15 +196,8 @@ function Budgets() {
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Optional notes"
-                style={{
-                  width: '100%',
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#fff',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  resize: 'none',
-                }}
+                className="modal-input"
+                style={{ resize: 'none' }}
               />
             </div>
 

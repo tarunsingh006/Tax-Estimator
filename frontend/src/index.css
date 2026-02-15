@@ -91,21 +91,17 @@ body {
 
 .input-group input {
   width: 100%;
-  padding: 14px 14px;
+  padding: 14px 16px;
   padding-right: 68px;
   /* room for eye button */
-  margin-top: 0;
-  /* input-group already provides spacing */
   min-height: 52px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  background: rgba(255, 255, 255, 0.045);
-  color: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
   outline: none;
   font-size: 15px;
-  transition:
-    box-shadow 0.15s ease,
-    border-color 0.15s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
 }
@@ -116,7 +112,7 @@ body {
 
 .input-group input:focus {
   box-shadow: 0 6px 18px rgba(5, 30, 60, 0.32);
-  border-color: rgba(141, 208, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 
@@ -173,10 +169,12 @@ label {
 
 input {
   width: 100%;
-  padding: 10px;
+  padding: 12px 16px;
   margin-top: 6px;
-  border-radius: 6px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
   outline: none;
   font-size: 14px;
 }
@@ -217,6 +215,26 @@ button {
   transform: translateY(0);
 }
 
+.secondary-btn {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
 button:hover {
   background: #041f38;
 }
@@ -252,15 +270,17 @@ button:hover {
 select.select-box {
   width: 100%;
   min-height: 52px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  appearance: auto;
 }
 
 select.select-box option {
-  color: #000;
+  background: #0f172a;
+  color: #fff;
 }
 
 .dashboard-box {
@@ -359,13 +379,11 @@ select.select-box option {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Switch icon color to black/grey when input is white (filled) */
+/* Eye icon stays white for glass aesthetic */
 input.filled~.password-toggle-btn,
 input.filled~button .lucide-eye,
 input.filled~button .lucide-eye-off {
-  color: #4b5563 !important;
-  /* Professional grey */
-  background: rgba(0, 0, 0, 0.05);
+  color: #ffffff !important;
 }
 
 /* Hide native arrows inside datalist inputs that look like weird icons */
@@ -377,84 +395,34 @@ input::-webkit-calendar-picker-indicator {
 
 
 /* default glass look */
-input,
-select {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-/* after user enters value */
-input.filled,
-select.filled {
-  background: #eef5ff;
-  color: #000;
-}
-
-/* keep dropdown arrow visible */
-select {
-  appearance: none;
-}
-
 /* === UNIFORM INPUT & SELECT LOOK === */
 input,
-select {
+select,
+textarea,
+.modal-input {
   width: 100%;
-  padding: 14px;
-  min-height: 52px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  padding: 12px 16px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  /* Clearly visible white border */
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
   font-size: 14px;
   outline: none;
+  transition: all 0.2s ease;
 }
 
-/* Placeholder text */
-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* Select placeholder color */
-select:has(option[value=""]:checked) {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Selected value color */
-select:not(:has(option[value=""]:checked)) {
+select option {
+  background: #0f172a;
   color: #fff;
 }
 
-/* IMPORTANT: allow native dropdown menu */
-select {
-  appearance: auto;
-  background-clip: padding-box;
-}
-
-/* ===== COMMON INPUT + SELECT ===== */
-input,
-select {
-  width: 100%;
-  padding: 14px;
-  min-height: 52px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 14px;
-  outline: none;
-}
-
-/* Placeholder for input */
-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* ===== SELECT PLACEHOLDER STATE ===== */
-select {
-  appearance: auto;
-  color: rgba(255, 255, 255, 0.6);
-}
 
 /* === PASSWORD GROUP BASE === */
 .password-group {
@@ -487,11 +455,10 @@ select {
 }
 
 /* ============================= */
-/* FILLED INPUT → WHITE FIELD */
+/* FILLED INPUT → WHITE FIELD (STAYS WHITE) */
 /* ============================= */
 .password-group:has(input.filled) .eye-btn {
-  color: #000000;
-  /* 👁 black */
+  color: #ffffff;
 }
 
 /* optional hover (no bg, just clarity) */
@@ -501,112 +468,7 @@ select {
 
 
 
-/* When a real value is selected → TURN WHITE */
-select:not([value=""]),
-select:focus:not(:has(option[value=""]:checked)),
-select:not(:has(option[value=""]:checked)) {
-  background: #ffffff;
-  color: #000;
-}
-
-/* ===== DROPDOWN OPTIONS (IMPORTANT FIX) ===== */
-select option {
-  background: #ffffff;
-  color: #000000;
-}
-
-/* Disabled placeholder option */
-select option[disabled] {
-  color: #888;
-}
-
-/* ===== INPUTS & SELECT BASE ===== */
-input,
-select {
-  width: 100%;
-  padding: 14px;
-  min-height: 52px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  /* GLASS by default */
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  outline: none;
-}
-
-/* ===== INPUT FILLED STATE ===== */
-input:not(:placeholder-shown) {
-  background: #ffffff;
-  color: #000;
-}
-
-/* ===== SELECT DEFAULT (NOT SELECTED) ===== */
-select {
-  appearance: auto;
-  cursor: pointer;
-}
-
-/* ===== SELECT AFTER VALUE CHOSEN ===== */
-select:has(option:checked:not([value=""])) {
-  background: #ffffff;
-  color: #000;
-}
-
-/* ===== DROPDOWN OPTIONS FIX ===== */
-select option {
-  background: #ffffff;
-  color: #000000;
-}
-
-/* Placeholder option */
-select option[value=""] {
-  color: #888;
-}
-
-/* ===== INPUT & SELECT BASE (GLASS) ===== */
-input,
-select {
-  width: 100%;
-  padding: 14px;
-  min-height: 52px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  outline: none;
-}
-
-/* ===== INPUT AFTER TYPING ===== */
-input:not(:placeholder-shown) {
-  background: #ffffff;
-  color: #000;
-}
-
-/* ===== SELECT PLACEHOLDER STATE ===== */
-select {
-  appearance: none;
-  cursor: pointer;
-}
-
-/* When placeholder option is selected */
-select:has(option[value=""]:checked) {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* ===== SELECT AFTER REAL VALUE ===== */
-select:not(:has(option[value=""]:checked)) {
-  background: #ffffff;
-  color: #000;
-}
-
-/* ===== DROPDOWN OPTIONS ===== */
-select option {
-  background: #ffffff;
-  color: #000;
-}
+/* Cleanup */
 
 /* ===== DASHBOARD LAYOUT ===== */
 
@@ -672,109 +534,6 @@ select option {
 
 /* ===== DASHBOARD LAYOUT ===== */
 
-.dashboard-container {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-}
-
-/* SIDEBAR */
-.sidebar {
-  width: 220px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-}
-
-.logo {
-  margin-bottom: 30px;
-}
-
-.side-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.side-nav span {
-  cursor: pointer;
-  opacity: 0.75;
-}
-
-.side-nav .active {
-  font-weight: 600;
-  opacity: 1;
-}
-
-/* MAIN */
-.dashboard-main {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-.dashboard-main::-webkit-scrollbar {
-  width: 6px;
-}
-
-.dashboard-main::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.dashboard-main::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-.dashboard-main::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* TOP BAR */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logout-btn {
-  padding: 6px 14px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-
-/* STATS */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin: 24px 0;
-}
-
-.stat-box {
-  padding: 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.stat-box p {
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-.stat-box h3 {
-  margin-top: 6px;
-}
-
-/* CHARTS */
-.charts-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
-}
-
-/* ===== DASHBOARD LAYOUT ===== */
 .dashboard-container {
   display: flex;
   height: 100vh;
@@ -1516,26 +1275,30 @@ thead {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.55);
-  /* dark overlay */
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.85);
+  /* Much darker overlay for better focus */
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
-  /* CENTER VERTICALLY */
   justify-content: center;
-  /* CENTER HORIZONTALLY */
   z-index: 9999;
 }
 
 /* ===== MODAL CARD ===== */
 .modal-card {
-  width: 420px;
+  position: relative;
+  /* REQUIRED FOR ABSOLUTE POSITIONING OF CLOSE BTN */
+  width: 440px;
   max-width: 90%;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  background: #ffffff !important;
+  /* BACK TO NORMAL WHITE */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   animation: modalPop 0.25s ease-out;
+  color: #000000 !important;
+  /* TEXT TO BLACK */
 }
 
 /* ===== MODAL HEADER ===== */
@@ -1546,48 +1309,145 @@ thead {
 }
 
 .modal-header h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: #000;
+  color: #000000 !important;
 }
 
-.modal-header button {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
+/* UNIVERSAL MODAL CLOSE BUTTON - PINNED TO TOP RIGHT EDGE */
+.modal-close-btn {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  color: #000000 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 999 !important;
+  transition: transform 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  transform: scale(1.1);
 }
 
 /* SUB TEXT */
 .modal-sub {
-  font-size: 13px;
-  margin-bottom: 14px;
-  opacity: 0.7;
-  color: #000;
+  font-size: 14px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+  color: #64748b !important;
+  /* Muted text */
 }
 
-/* INPUTS */
+/* INPUTS & LABELS LIGHT THEME (FOR MODAL CARDS) */
 .modal-card label {
-  font-size: 12px;
-  margin-top: 10px;
+  font-size: 14px;
+  margin-top: 16px;
+  margin-bottom: 8px;
   display: block;
-  color: #000;
+  font-weight: 600;
+  color: #334155 !important;
 }
 
+/* BLACK BORDER + BLACK TEXT + SHADOW (ONLY IN MODALS) */
 .modal-card input,
 .modal-card select,
-.modal-card textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+.modal-card textarea,
+.modal-card .modal-input {
+  width: 100% !important;
+  background: #ffffff !important;
+  border: 1.5px solid #000000 !important;
+  /* SOLID BLACK BORDER */
+  color: #000000 !important;
+  /* SOLID BLACK TEXT */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  /* BLACK SHADOW */
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.modal-card textarea {
-  resize: none;
-  min-height: 80px;
+/* FOCUS STATE DESIGN (MODALS) */
+.modal-card input:focus,
+.modal-card select:focus,
+.modal-card textarea:focus {
+  border: 2px solid #000000 !important;
+  /* Thicker Border on Focus */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+  /* More pronounced shadow */
+  background: #ffffff !important;
+}
+
+.modal-card input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* BASE GLASSY INPUT STYLES (FOR TAX ESTIMATOR / BUDGETS) */
+input,
+select,
+textarea,
+.modal-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  /* White borders for Blue BG */
+  color: #ffffff;
+  /* White text for Blue BG */
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+form label {
+  font-size: 14px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  display: block;
+  font-weight: 600;
+  color: #ffffff;
+  /* Labels white for general forms on blue bg */
+}
+
+/* FOCUS DESIGN (TAX ESTIMATOR / BUDGETS) */
+input:focus,
+select:focus,
+textarea:focus,
+.modal-input:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* MODAL-SPECIFIC FOCUS (HIGHER SPECIFICITY) */
+.modal-card input:focus,
+.modal-card select:focus,
+.modal-card textarea:focus,
+.modal-card .modal-input:focus {
+  border: 2px solid #000000 !important;
+  /* Thick Black Border while typing */
+  color: #000000 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  /* Designed Shadow */
+  background: #ffffff !important;
+  outline: none !important;
+  /* Removes default browser blue focus */
 }
 
 /* TWO COLUMN ROW */
@@ -1634,42 +1494,13 @@ thead {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-/* Placeholder text color */
-.modal-card input::placeholder,
-.modal-card textarea::placeholder {
-  color: #000;
-  opacity: 0.6;
-  /* keeps it readable but not too dark */
-}
-
-/* For select default option (looks like placeholder) */
-.modal-card select {
-  color: #000;
-}
-
-/* Input & textarea placeholders */
-.modal-card input::placeholder,
-.modal-card textarea::placeholder {
-  color: #000;
-  opacity: 0.6;
-}
-
-/* Select placeholder (disabled option) */
-.modal-card select {
-  color: #000;
-}
-
-.modal-card select option[value=""] {
-  color: #000;
-  opacity: 0.6;
+  background: rgba(15, 23, 42, 0.9) !important;
+  /* Restored to Dark */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
 }
 
 /* Modal positioning fix */
@@ -1693,27 +1524,31 @@ thead {
 /* Inputs & selects */
 .modal-input {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  color: rgb(3, 3, 3);
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
   outline: none;
-  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s;
 }
 
 /* Hover & focus outline */
 .modal-input:hover,
 .modal-input:focus {
-  border-color: #1e88e5;
-  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.15);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Textarea height */
-.textarea {
+.textarea,
+textarea.modal-input {
   min-height: 90px;
   resize: none;
 }
 
+/* Restored Close Button Styling */
 .modal-close-btn {
   position: absolute;
   top: 20px;
@@ -1725,7 +1560,8 @@ thead {
   align-items: center;
   justify-content: center;
   background: #f1f5f9;
-  color: #64748b;
+  color: #000000 !important;
+  /* CROSS MARK TO BLACK */
   border: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -3061,6 +2897,17 @@ th {
   border-color: rgba(52, 211, 153, 0.4);
 }
 
+.action-link-btn.delete {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.action-link-btn.delete:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
 .empty-row {
   text-align: center;
   padding: 60px !important;
@@ -3378,61 +3225,17 @@ th {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
 /* =========================================
    TAX CALENDAR STYLES
    ========================================= */
 
-.calendar-event-card {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 16px !important;
-    padding: 24px !important;
-    transition: all 0.3s ease !important;
-    position: relative;
-    overflow: hidden;
+.glassy-modal {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(24px) !important;
+  border: 1px solid #ffffff !important;
+  /* Consistent White Border */
+  border-radius: 24px !important;
+  padding: 32px !important;
+  color: #ffffff !important;
 }
-
-.calendar-event-card:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(59, 130, 246, 0.3) !important;
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-}
-
-.calendar-event-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: #3b82f6;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.calendar-event-card:hover::before {
-    opacity: 1;
-}
-
-.event-type-badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.event-type-badge.reminder {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.event-type-badge.payment {
-    background: rgba(245, 158, 11, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-}
-

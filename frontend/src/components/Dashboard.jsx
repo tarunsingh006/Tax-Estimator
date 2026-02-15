@@ -41,6 +41,9 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
   const [transactions, setTransactions] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
+  const [estimatedTax, setEstimatedTax] = useState(0);
+  const [savingsRate, setSavingsRate] = useState(0);
+  const [trends, setTrends] = useState({ income: 0, expense: 0, tax: 0, savings: 0 });
 
   const transactionsRef = useRef(null);
   const dashboardRef = useRef(null);
@@ -61,16 +64,51 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
   }, []);
 
   useEffect(() => {
-    let income = 0;
-    let expense = 0;
+    // Trending Calculations (Current Month vs Last Month)
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-    transactions.forEach((txn) => {
-      if (txn.type === 'income') income += Number(txn.amount);
-      if (txn.type === 'expense') expense += Number(txn.amount);
+    const currentMonthIncome = transactions
+      .filter(t => t.type === 'income' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const lastMonthIncome = transactions
+      .filter(t => t.type === 'income' && new Date(t.date).getMonth() === lastMonth && new Date(t.date).getFullYear() === lastMonthYear)
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const currentMonthExpense = transactions
+      .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const lastMonthExpense = transactions
+      .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === lastMonth && new Date(t.date).getFullYear() === lastMonthYear)
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const calcTrend = (curr, prev) => {
+      if (prev === 0) return curr > 0 ? 100 : 0;
+      return Math.round(((curr - prev) / prev) * 100);
+    };
+
+    const currentSavings = currentMonthIncome > 0 ? Math.max(0, Math.round(((currentMonthIncome - currentMonthExpense) / currentMonthIncome) * 100)) : 0;
+    const lastSavings = lastMonthIncome > 0 ? Math.max(0, Math.round(((lastMonthIncome - lastMonthExpense) / lastMonthIncome) * 100)) : 0;
+
+    setTotalIncome(currentMonthIncome);
+    setTotalExpense(currentMonthExpense);
+    setSavingsRate(currentSavings);
+    setEstimatedTax((currentMonthIncome - currentMonthExpense) > 0 ? (currentMonthIncome - currentMonthExpense) * 0.20 : 0);
+
+    setTrends({
+      income: calcTrend(currentMonthIncome, lastMonthIncome),
+      expense: calcTrend(currentMonthExpense, lastMonthExpense),
+      tax: calcTrend(
+        (currentMonthIncome - currentMonthExpense) > 0 ? (currentMonthIncome - currentMonthExpense) * 0.20 : 0,
+        (lastMonthIncome - lastMonthExpense) > 0 ? (lastMonthIncome - lastMonthExpense) * 0.20 : 0
+      ),
+      savings: calcTrend(currentSavings, lastSavings)
     });
-
-    setTotalIncome(income);
-    setTotalExpense(expense);
   }, [transactions]);
 
   // Preparing data for Bar Chart (Last 6 Months)
@@ -181,33 +219,37 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
               label: 'Monthly Income',
               value: `₹${totalIncome.toLocaleString()} `,
               icon: <TrendingUp size={24} />,
-              bg: 'rgba(52, 211, 153, 0.15)', // emerald-400 with opacity
+              bg: 'rgba(52, 211, 153, 0.15)',
               color: '#34d399',
-              trend: 'up'
+              trend: trends.income >= 0 ? 'up' : 'down',
+              trendVal: trends.income
             },
             {
               label: 'Monthly Expenses',
               value: `₹${totalExpense.toLocaleString()} `,
               icon: <TrendingDown size={24} />,
-              bg: 'rgba(248, 113, 113, 0.15)', // red-400 with opacity
+              bg: 'rgba(248, 113, 113, 0.15)',
               color: '#f87171',
-              trend: 'down'
+              trend: trends.expense >= 0 ? 'up' : 'down',
+              trendVal: trends.expense
             },
             {
               label: 'Estimated Tax Due',
-              value: '₹0.00',
+              value: `₹${estimatedTax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
               icon: <Wallet size={24} />,
-              bg: 'rgba(251, 191, 36, 0.15)', // amber-400 with opacity
+              bg: 'rgba(251, 191, 36, 0.15)',
               color: '#fbbf24',
-              trend: 'neutral'
+              trend: trends.tax >= 0 ? 'up' : 'down',
+              trendVal: trends.tax
             },
             {
               label: 'Savings Rate',
-              value: '0%',
+              value: `${savingsRate}%`,
               icon: <Target size={24} />,
-              bg: 'rgba(96, 165, 250, 0.15)', // blue-400 with opacity
+              bg: 'rgba(96, 165, 250, 0.15)',
               color: '#60a5fa',
-              trend: 'up'
+              trend: trends.savings >= 0 ? 'up' : 'down',
+              trendVal: trends.savings
             },
           ].map((item, i) => (
             <div
@@ -231,7 +273,7 @@ function Dashboard({ onLogout, userName = 'User', userEmail = 'user@email.com' }
               <h3>{item.value}</h3>
               <span className="trend-indicator">
                 {item.trend === 'up' ? <ArrowUpCircle size={12} /> : item.trend === 'down' ? <ArrowDownCircle size={12} /> : null}
-                0% from last month
+                {Math.abs(item.trendVal)}% from last month
               </span>
             </div>
           ))}

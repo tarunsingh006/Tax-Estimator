@@ -20,7 +20,7 @@ const AddEventModal = ({ onClose, onSave, year }) => {
             <div className="modal-card">
                 <div className="modal-header">
                     <h3>Create New Reminder</h3>
-                    <button onClick={onClose}>✕</button>
+                    <button className="modal-close-btn" onClick={onClose}>✕</button>
                 </div>
                 <p className="modal-sub">
                     Get ahead of your taxes by setting custom deadlines.
@@ -34,7 +34,7 @@ const AddEventModal = ({ onClose, onSave, year }) => {
                     onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
                 />
 
-                <div className="modal-row">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                     <div>
                         <label>Date</label>
                         <input
@@ -498,12 +498,7 @@ function TaxEstimator() {
                                         name="country"
                                         list="country-list"
                                         placeholder="Enter country"
-                                        style={{
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
-                                        }}
+                                        className="modal-input"
                                         value={formData.country}
                                         onChange={handleChange}
                                         required
@@ -528,12 +523,7 @@ function TaxEstimator() {
                                         name="state"
                                         list="state-list"
                                         placeholder="Enter state / province"
-                                        style={{
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
-                                        }}
+                                        className="modal-input"
                                         value={formData.state}
                                         onChange={handleChange}
                                         required
@@ -569,12 +559,7 @@ function TaxEstimator() {
                                     <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px', fontWeight: '500', opacity: 0.8 }}>Filing Status</label>
                                     <select
                                         name="filingStatus"
-                                        style={{
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
-                                        }}
+                                        className="modal-input"
                                         value={formData.filingStatus}
                                         onChange={handleChange}
                                         required
@@ -594,12 +579,7 @@ function TaxEstimator() {
                                     <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px', fontWeight: '500', opacity: 0.8 }}>Year</label>
                                     <select
                                         value={selectedYear}
-                                        style={{
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
-                                        }}
+                                        className="modal-input"
                                         onChange={(e) => {
                                             setSelectedYear(parseInt(e.target.value));
                                             setFormData(prev => ({ ...prev, quarter: '' })); // Reset quarter when year changes
@@ -615,12 +595,7 @@ function TaxEstimator() {
                                     <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px', fontWeight: '500', opacity: 0.8 }}>Quarter</label>
                                     <select
                                         name="quarter"
-                                        style={{
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
-                                        }}
+                                        className="modal-input"
                                         value={formData.quarter}
                                         onChange={handleChange}
                                         required
@@ -648,13 +623,15 @@ function TaxEstimator() {
                                     Income
                                 </h5>
                                 <label>Gross Income for Quarter</label>
-                                <div style={{ position: 'relative' }}>
+                                <div style={{ position: 'relative', marginTop: '10px' }}>
                                     <span
                                         style={{
                                             position: 'absolute',
-                                            left: '14px',
-                                            top: '14px',
-                                            opacity: 0.6,
+                                            left: '16px',
+                                            top: '12px',
+                                            opacity: 0.8,
+                                            color: '#fff',
+                                            zIndex: 1
                                         }}
                                     >
                                         ₹
@@ -665,12 +642,9 @@ function TaxEstimator() {
                                         placeholder="0.00"
                                         value={formData.grossIncome}
                                         onChange={handleChange}
+                                        className="modal-input"
                                         style={{
                                             paddingLeft: '32px',
-                                            height: '48px',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '12px'
                                         }}
                                         required
                                     />
@@ -705,12 +679,7 @@ function TaxEstimator() {
                                             type="number"
                                             name="businessExpenses"
                                             placeholder="0.00"
-                                            style={{
-                                                height: '48px',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '12px'
-                                            }}
+                                            className="modal-input"
                                             value={formData.businessExpenses}
                                             onChange={handleChange}
                                         />
@@ -722,12 +691,7 @@ function TaxEstimator() {
                                             type="number"
                                             name="retirementContributions"
                                             placeholder="0.00"
-                                            style={{
-                                                height: '48px',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '12px'
-                                            }}
+                                            className="modal-input"
                                             value={formData.retirementContributions}
                                             onChange={handleChange}
                                         />
@@ -748,12 +712,7 @@ function TaxEstimator() {
                                             type="number"
                                             name="healthInsurance"
                                             placeholder="0.00"
-                                            style={{
-                                                height: '48px',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '12px'
-                                            }}
+                                            className="modal-input"
                                             value={formData.healthInsurance}
                                             onChange={handleChange}
                                         />
@@ -765,12 +724,7 @@ function TaxEstimator() {
                                             type="number"
                                             name="homeOffice"
                                             placeholder="0.00"
-                                            style={{
-                                                height: '48px',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '12px'
-                                            }}
+                                            className="modal-input"
                                             value={formData.homeOffice}
                                             onChange={handleChange}
                                         />
@@ -844,10 +798,10 @@ function TaxEstimator() {
                                     </p>
                                     <button
                                         onClick={handleViewHistory}
-                                        className="ghost"
-                                        style={{ marginTop: '16px', fontSize: '13px', textDecoration: 'underline' }}
+                                        className="secondary-btn"
+                                        style={{ marginTop: '16px', fontSize: '12px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', margin: '16px auto 0' }}
                                     >
-                                        View Past Estimates
+                                        <Clock size={14} /> View History
                                     </button>
                                 </>
                             )}
