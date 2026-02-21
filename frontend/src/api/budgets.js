@@ -1,18 +1,16 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/budgets";
+import api from "./axios";
 
 export const createBudget = async (budgetData) => {
-    const response = await axios.post(API_URL, budgetData);
+    const response = await api.post("/budgets", budgetData);
     return response.data;
 };
 
 export const getBudgets = async (userId) => {
-    const response = await axios.get(`${API_URL}/${userId}`);
+    const response = await api.get(`/budgets/${userId}`);
     return response.data;
 };
 
 export const deleteBudget = async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    const response = await api.delete(`/budgets/${id}`);
     return response.data;
 };

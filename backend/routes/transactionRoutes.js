@@ -10,6 +10,10 @@ const {
   updateTransaction,
   getTransactionSummary
 } = require("../controllers/transactionController");
+const authMiddleware = require("../middleware/authMiddleware");
+
+// All transaction routes should be protected
+router.use(authMiddleware);
 
 // Add transaction
 router.post("/", (req, res, next) => {

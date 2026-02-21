@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const { sendAlertIfEnabled } = require("../utils/email");
 
 /**
  * ADD BUDGET API
@@ -28,6 +29,23 @@ exports.addBudget = async (req, res) => {
         res.status(201).json({
             message: "Budget created successfully",
             budgetId: result.insertId,
+        });
+
+        // 🔔 Send notification if enabled
+        await sendAlertIfEnabled(user_id, 'budgetReminders', {
+            subject: `💰 New Budget Created: ${category}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <h2 style="color: #10b981;">Budget Established</h2>
+                <p>Hello,</p>
+                <p>You have set a new budget for <strong>${category}</strong> for the month of <strong>${month}</strong>.</p>
+                <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+                  <p style="margin: 5px 0;">Limit: <strong>₹${parseFloat(amount).toLocaleString()}</strong></p>
+                  <p style="margin: 5px 0;">Notes: ${description || 'No notes'}</p>
+                </div>
+                <p>We'll notify you if your spending approaches this limit.</p>
+              </div>
+            `
         });
 
     } catch (err) {

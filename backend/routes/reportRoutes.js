@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const reportController = require("../controllers/reportController");
+const authMiddleware = require("../middleware/authMiddleware");
+
+// All report routes should be protected
+router.use(authMiddleware);
 
 // POST /api/reports - Save a generated report to history
 router.post("/", reportController.saveReport);

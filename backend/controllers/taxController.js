@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const { sendAlertIfEnabled } = require("../utils/email");
 
 /**
  * SAVE TAX ESTIMATE
@@ -47,6 +48,23 @@ exports.saveEstimate = async (req, res) => {
         res.status(201).json({
             message: "Tax estimate saved successfully",
             estimateId: result.insertId
+        });
+
+        // 🔔 Send Email notification if enabled
+        await sendAlertIfEnabled(user_id, 'emailAlerts', {
+            subject: `📊 New Tax Estimate: ${quarter}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <h2 style="color: #3b82f6;">Tax Estimate Saved</h2>
+                <p>Hello,</p>
+                <p>Your tax estimation for <strong>${quarter}</strong> has been saved to your history.</p>
+                <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 5px 0;">Country: <strong>${country}</strong></p>
+                  <p style="margin: 5px 0;">Estimated Tax: <strong style="color: #3b82f6;">₹${parseFloat(estimatedTax).toLocaleString()}</strong></p>
+                </div>
+                <p>You can view the full breakdown in your Tax Estimator history.</p>
+              </div>
+            `
         });
 
     } catch (err) {
@@ -121,6 +139,24 @@ exports.saveCalendarEvent = async (req, res) => {
         res.status(201).json({
             message: "Calendar event saved",
             eventId: result.insertId
+        });
+
+        // 🔔 Send Email notification if enabled
+        await sendAlertIfEnabled(user_id, 'taxDeadlines', {
+            subject: `📅 New Tax Deadline: ${title}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <h2 style="color: #ef4444;">Tax Deadline Reminder</h2>
+                <p>Hello,</p>
+                <p>A new event has been added to your tax calendar:</p>
+                <div style="background: #fff5f5; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+                  <h3 style="margin: 0 0 10px 0;">${title}</h3>
+                  <p style="margin: 5px 0;">Date: <strong>${new Date(event_date).toLocaleDateString()}</strong></p>
+                  <p style="margin: 5px 0;">Description: ${description || 'No description provided'}</p>
+                </div>
+                <p>We'll keep you updated on your deadlines.</p>
+              </div>
+            `
         });
     } catch (err) {
         console.error("❌ Save Calendar Event Error:", err);

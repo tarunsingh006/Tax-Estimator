@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const { sendAlertIfEnabled } = require("../utils/email");
 
 /**
  * ADD TRANSACTION API
@@ -29,6 +30,43 @@ exports.addTransaction = async (req, res) => {
       message: "Transaction added successfully",
       transactionId: result.insertId,
     });
+
+    // 🔔 Logic for Alerts (Run in background)
+    if (type.toLowerCase() === 'expense') {
+      const budgetMonth = date.substring(0, 7); // YYYY-MM
+      const [budgets] = await db.query(
+        "SELECT amount FROM budgets WHERE user_id = ? AND category = ? AND month = ?",
+        [user_id, category, budgetMonth]
+      );
+
+      if (budgets.length > 0) {
+        const budgetLimit = budgets[0].amount;
+        const [spentHistory] = await db.query(
+          "SELECT SUM(amount) as totalSpent FROM transactions WHERE user_id = ? AND category = ? AND type = 'expense' AND DATE_FORMAT(date, '%Y-%m') = ?",
+          [user_id, category, budgetMonth]
+        );
+
+        const totalSpent = spentHistory[0].totalSpent || 0;
+
+        if (totalSpent > budgetLimit) {
+          await sendAlertIfEnabled(user_id, 'budgetReminders', {
+            subject: `⚠️ Budget Exceeded: ${category}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #fee2e2; border-radius: 10px;">
+                <h2 style="color: #dc2626;">Budget Alert!</h2>
+                <p>Hello,</p>
+                <p>You've exceeded your <strong>${category}</strong> budget for <strong>${budgetMonth}</strong>.</p>
+                <div style="background: #fef2f2; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 5px 0;">Limit: <strong>₹${budgetLimit}</strong></p>
+                  <p style="margin: 5px 0;">Current Spending: <strong style="color: #dc2626;">₹${totalSpent}</strong></p>
+                </div>
+                <p>Time to adjust your spending or update your budget!</p>
+              </div>
+            `
+          });
+        }
+      }
+    }
 
   } catch (err) {
     console.error("Insert Transaction Error:", err);

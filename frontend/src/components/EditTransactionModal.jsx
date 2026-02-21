@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { showToast } from "./Toast";
+import { getCategories } from "../api/categories";
 import "../index.css";
 
 function EditTransactionModal({ txn, onClose, onSuccess }) {
@@ -11,6 +12,19 @@ function EditTransactionModal({ txn, onClose, onSuccess }) {
     });
 
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories();
+                setCategories(data);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         if (txn) {
@@ -80,14 +94,23 @@ function EditTransactionModal({ txn, onClose, onSuccess }) {
                         placeholder="Category"
                     />
                     <datalist id="edit-categories">
-                        <option value="Food" />
-                        <option value="Transport" />
-                        <option value="Utilities" />
-                        <option value="Shopping" />
-                        <option value="Health" />
-                        <option value="Salary" />
-                        <option value="Investment" />
-                        <option value="Other" />
+                        {categories
+                            .filter(cat => cat.type === form.type)
+                            .map(cat => (
+                                <option key={cat.id} value={cat.name} />
+                            ))}
+                        {categories.length === 0 && (
+                            <>
+                                <option value="Food" />
+                                <option value="Transport" />
+                                <option value="Utilities" />
+                                <option value="Shopping" />
+                                <option value="Health" />
+                                <option value="Salary" />
+                                <option value="Investment" />
+                                <option value="Other" />
+                            </>
+                        )}
                     </datalist>
 
                     <div className="modal-row">

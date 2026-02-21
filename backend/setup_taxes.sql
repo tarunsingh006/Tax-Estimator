@@ -25,11 +25,4 @@ CREATE TABLE IF NOT EXISTS tax_calendar_events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seed with some default events for 2025
-INSERT INTO tax_calendar_events (title, event_date, description, event_type) VALUES
-('Q1 Estimated Tax Payment Due', '2025-04-15', 'Deadline for first quarter estimated tax payment', 'payment'),
-('Q2 Estimated Tax Payment Due', '2025-06-15', 'Deadline for second quarter estimated tax payment', 'payment'),
-('Q3 Estimated Tax Payment Due', '2025-09-15', 'Deadline for third quarter estimated tax payment', 'payment'),
-('Q4 Estimated Tax Payment Due', '2026-01-15', 'Deadline for fourth quarter estimated tax payment', 'payment'),
-('Tax Extension Deadline', '2025-10-15', 'Deadline to file if you requested an extension', 'reminder'),
-('Annual Tax Return Deadline', '2025-04-15', 'Last day to file 2024 income tax returns', 'payment');
+

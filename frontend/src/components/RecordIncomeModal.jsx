@@ -1,6 +1,6 @@
-import '../index.css';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addTransaction } from "../api/transactions";
+import { getCategories } from "../api/categories";
 import { showToast } from './Toast';
 
 function RecordIncomeModal({ onClose, onSuccess }) {
@@ -10,6 +10,19 @@ function RecordIncomeModal({ onClose, onSuccess }) {
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data.filter(c => c.type === 'income'));
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -75,21 +88,17 @@ function RecordIncomeModal({ onClose, onSuccess }) {
         <div className="modal-row">
           <div>
             <label>Category</label>
-            <input
+            <select
               className="modal-input"
-              list="income-categories"
-              placeholder="Enter or select category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-            />
-            <datalist id="income-categories">
-              <option value="Salary" />
-              <option value="Freelance" />
-              <option value="Business" />
-              <option value="Investment" />
-              <option value="Gift" />
-              <option value="Other" />
-            </datalist>
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>

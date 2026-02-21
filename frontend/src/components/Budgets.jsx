@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import '../index.css';
 import { getBudgets, createBudget, deleteBudget } from '../api/budgets';
+import { getCategories } from '../api/categories';
 import { showToast } from './Toast';
 
 function Budgets() {
   const [showForm, setShowForm] = useState(false);
   const [budgets, setBudgets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
@@ -21,11 +23,15 @@ function Budgets() {
     if (!userId) return;
     try {
       setLoading(true);
-      const data = await getBudgets(userId);
-      setBudgets(data);
+      const [budgetsData, categoriesData] = await Promise.all([
+        getBudgets(userId),
+        getCategories()
+      ]);
+      setBudgets(budgetsData);
+      setCategories(categoriesData.filter(c => c.type === 'expense'));
     } catch (error) {
-      console.error('Error fetching budgets:', error);
-      showToast('Error', 'Failed to load budgets', 'error');
+      console.error('Error fetching data:', error);
+      showToast('Error', 'Failed to load budget data', 'error');
     } finally {
       setLoading(false);
     }
@@ -143,23 +149,18 @@ function Budgets() {
             }}>
               <div>
                 <label>Category</label>
-                <input
-                  list="categories"
+                <select
                   name="category"
                   value={form.category}
                   onChange={handleChange}
-                  placeholder="Type or select category"
                   className="modal-input"
                   required
-                />
-                <datalist id="categories">
-                  <option value="Food" />
-                  <option value="Transport" />
-                  <option value="Utilities" />
-                  <option value="Shopping" />
-                  <option value="Health" />
-                  <option value="Other" />
-                </datalist>
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div>

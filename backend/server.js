@@ -49,18 +49,24 @@ const transactionRoutes = require("./routes/transactionRoutes");
 const budgetRoutes = require("./routes/budgetRoutes");
 const taxRoutes = require("./routes/taxRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const userRoutes = require("./routes/userRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 console.log("✅ authRoutes loaded");
 console.log("🔥 Transaction routes loaded successfully");
 console.log("💰 Budget routes loaded successfully");
 console.log("📊 Tax routes loaded successfully");
 console.log("📈 Report routes loaded successfully");
+console.log("👤 User routes loaded successfully");
+console.log("🏷️ Category routes loaded successfully");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/taxes", taxRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
 
 
 

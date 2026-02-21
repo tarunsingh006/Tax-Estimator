@@ -2,18 +2,21 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Eye, EyeOff } from 'lucide-react';
 import '../index.css';
+import { forgotPassword, verifyOtp as apiVerifyOtp, resetPassword as apiResetPassword } from '../api/auth';
+import { showToast } from './Toast';
 
 function ForgotPasswordForm() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
-
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const [captcha, setCaptcha] = useState('');
   const [captchaInput, setCaptchaInput] = useState('');
-
-  const [otp, setOtp] = useState('');
   const [otpInput, setOtpInput] = useState('');
-
+  const [resetSessionToken, setResetSessionToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -30,28 +33,73 @@ function ForgotPasswordForm() {
 
   const isCaptchaValid = captchaInput === captcha;
 
-  /* ---------- OTP ---------- */
-  const sendOtp = () => {
-    if (!isCaptchaValid) return;
+  /* ---------- API CALLS ---------- */
+  const sendOtp = async () => {
+    if (!isCaptchaValid) {
+      showToast("Invalid Captcha", "Please enter the correct captcha code", "info");
+      return;
+    }
+    if (!email) {
+      showToast("Error", "Please enter your email address", "info");
+      return;
+    }
 
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    setOtp(generatedOtp);
-
-    console.log('OTP (mock):', generatedOtp); // dev only
-    setStep(2);
-  };
-
-  const verifyOtp = () => {
-    if (otpInput === otp) {
-      setStep(3);
-    } else {
-      alert('Invalid OTP');
+    try {
+      setLoading(true);
+      await forgotPassword(email);
+      showToast("OTP Sent", "Verification code has been sent to your email", "success");
+      setStep(2);
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      showToast("Error", error.response?.data?.message || "Failed to send OTP", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleFinalReset = () => {
-    alert('Password reset successfully (mock)');
-    navigate('/'); // ✅ back to login
+  const verifyOtp = async () => {
+    if (!otpInput) {
+      showToast("Required", "Please enter the 6-digit OTP", "info");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await apiVerifyOtp(email, otpInput);
+      setResetSessionToken(data.resetSessionToken);
+      showToast("Verified", "OTP verified successfully", "success");
+      setStep(3);
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Invalid or expired OTP", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFinalReset = async () => {
+    if (!newPassword || !confirmPassword) {
+      showToast("Required", "Please fill both password fields", "info");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast("Error", "Passwords do not match", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      showToast("Error", "Password must be at least 6 characters", "info");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await apiResetPassword(email, resetSessionToken, newPassword);
+      showToast("Success", "Password reset successfully ✅", "success");
+      navigate('/');
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Failed to reset password", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFilled = (e) => {
@@ -75,7 +123,11 @@ function ForgotPasswordForm() {
               <input
                 type="email"
                 placeholder="username@gmail.com"
-                onChange={handleFilled}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleFilled(e);
+                }}
               />
             </div>
 
@@ -160,13 +212,13 @@ function ForgotPasswordForm() {
             <button
               className="signin"
               onClick={sendOtp}
-              disabled={!isCaptchaValid}
+              disabled={!isCaptchaValid || loading}
               style={{
-                opacity: isCaptchaValid ? 1 : 0.5,
-                cursor: isCaptchaValid ? 'pointer' : 'not-allowed',
+                opacity: (isCaptchaValid && !loading) ? 1 : 0.5,
+                cursor: (isCaptchaValid && !loading) ? 'pointer' : 'not-allowed',
               }}
             >
-              Send OTP
+              {loading ? 'Sending...' : 'Send OTP'}
             </button>
           </>
         )}
@@ -174,15 +226,14 @@ function ForgotPasswordForm() {
         {/* ================= STEP 2 : VERIFY OTP ================= */}
         {step === 2 && (
           <>
-            {/* DEV ONLY */}
             <p
               style={{
                 fontSize: '12px',
-                color: '#000',
+                color: 'rgba(255,255,255,0.6)',
                 marginBottom: '6px',
               }}
             >
-              Dev OTP: <strong>{otp}</strong>
+              Verification code sent to <strong>{email}</strong>
             </p>
 
             <div className="input-group">
@@ -197,8 +248,8 @@ function ForgotPasswordForm() {
               />
             </div>
 
-            <button className="signin" onClick={verifyOtp}>
-              Verify OTP
+            <button className="signin" onClick={verifyOtp} disabled={loading}>
+              {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
           </>
         )}
@@ -211,7 +262,11 @@ function ForgotPasswordForm() {
               <input
                 type={showNewPassword ? 'text' : 'password'}
                 placeholder="New Password"
-                onChange={handleFilled}
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  handleFilled(e);
+                }}
               />
               <button
                 type="button"
@@ -227,7 +282,11 @@ function ForgotPasswordForm() {
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm Password"
-                onChange={handleFilled}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  handleFilled(e);
+                }}
               />
               <button
                 type="button"
@@ -240,8 +299,8 @@ function ForgotPasswordForm() {
               </button>
             </div>
 
-            <button className="signin" onClick={handleFinalReset}>
-              Reset Password
+            <button className="signin" onClick={handleFinalReset} disabled={loading}>
+              {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </>
         )}

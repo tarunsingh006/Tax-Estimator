@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   User,
   Tag,
@@ -11,31 +11,178 @@ import {
   Plus
 } from 'lucide-react';
 import '../index.css';
+import { getProfile, updateProfile, updateNotifications, changePassword, deleteAccount } from '../api/user';
+import { getCategories, addCategory, updateCategory, deleteCategory } from '../api/categories';
+import { showToast } from './Toast';
+import CategoryModal from './CategoryModal';
 
 function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
+  const [loading, setLoading] = useState(false);
 
-  // Local state for categories (demo)
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Business Expenses', color: '#ef4444' },
-    { id: 2, name: 'Office Rent', color: '#3b82f6' },
-    { id: 3, name: 'Software Subscriptions', color: '#8b5cf6' },
-    { id: 4, name: 'Professional Development', color: '#22c55e' },
-  ]);
-
+  // States
+  const [categories, setCategories] = useState([]);
   const [profile, setProfile] = useState({
-    name: localStorage.getItem('userName') || 'User',
-    email: localStorage.getItem('userEmail') || 'user@example.com',
+    name: '',
+    email: '',
     currency: 'USD',
     language: 'English'
   });
-
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
     budgetReminders: true,
     taxDeadlines: true,
     weeklyReports: false
   });
+
+  // Security state
+  const [security, setSecurity] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Category Modal State
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const profileData = await getProfile();
+      setProfile({
+        name: profileData.full_name || '',
+        email: profileData.email || '',
+        currency: profileData.currency || 'USD',
+        language: profileData.language || 'English'
+      });
+
+      if (profileData.notification_preferences) {
+        setNotifications(profileData.notification_preferences);
+      }
+
+      const categoriesData = await getCategories();
+      setCategories(categoriesData);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      showToast("Error", "Failed to load settings data", "error");
+    }
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      setLoading(true);
+      await updateProfile({
+        full_name: profile.name,
+        email: profile.email,
+        currency: profile.currency,
+        language: profile.language
+      });
+
+      // Update local storage if name or email changed
+      localStorage.setItem('userName', profile.name);
+      localStorage.setItem('userEmail', profile.email);
+
+      showToast("Success", "Profile updated successfully", "success");
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Failed to update profile", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNotificationsSave = async () => {
+    try {
+      setLoading(true);
+      await updateNotifications(notifications);
+      showToast("Success", "Preferences updated successfully", "success");
+    } catch (error) {
+      showToast("Error", "Failed to update notification preferences", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (security.newPassword !== security.confirmPassword) {
+      showToast("Error", "Passwords do not match", "error");
+      return;
+    }
+
+    if (security.newPassword.length < 6) {
+      showToast("Error", "Password must be at least 6 characters", "info");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await changePassword({
+        currentPassword: security.currentPassword,
+        newPassword: security.newPassword
+      });
+      setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      showToast("Success", "Password changed successfully", "success");
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Failed to change password", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+      try {
+        await deleteAccount();
+        showToast("Account Deleted", "Your account has been removed", "success");
+        localStorage.clear();
+        window.location.href = '/login';
+      } catch (error) {
+        showToast("Error", "Failed to delete account", "error");
+      }
+    }
+  };
+
+  const handleAddCategory = () => {
+    setEditingCategory(null);
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleEditCategory = (cat) => {
+    setEditingCategory(cat);
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (window.confirm("Delete this category?")) {
+      try {
+        await deleteCategory(id);
+        setCategories(categories.filter(c => c.id !== id));
+        showToast("Success", "Category deleted", "success");
+      } catch (error) {
+        showToast("Error", "Failed to delete category", "error");
+      }
+    }
+  };
+
+  const saveCategory = async (data) => {
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, data);
+        showToast("Success", "Category updated", "success");
+      } else {
+        await addCategory(data);
+        showToast("Success", "Category added", "success");
+      }
+      setIsCategoryModalOpen(false);
+      const categoriesData = await getCategories();
+      setCategories(categoriesData);
+    } catch (error) {
+      showToast("Error", "Failed to save category", "error");
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -84,8 +231,13 @@ function Settings() {
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-                <button className="primary-btn" style={{ gap: '8px' }}>
-                  <Save size={18} /> Save Changes
+                <button
+                  className="primary-btn"
+                  style={{ gap: '8px' }}
+                  onClick={handleProfileSave}
+                  disabled={loading}
+                >
+                  <Save size={18} /> {loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -96,7 +248,11 @@ function Settings() {
           <div className="transactions-card" style={{ padding: '32px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h4 style={{ fontSize: '18px', fontWeight: '600' }}>Manage Categories</h4>
-              <button className="primary-btn" style={{ padding: '8px 16px', fontSize: '13px', gap: '6px' }}>
+              <button
+                className="primary-btn"
+                style={{ padding: '8px 16px', fontSize: '13px', gap: '6px' }}
+                onClick={handleAddCategory}
+              >
                 <Plus size={16} /> Add New
               </button>
             </div>
@@ -113,13 +269,16 @@ function Settings() {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: cat.color }} />
-                    <span style={{ fontWeight: '500' }}>{cat.name}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontWeight: '500' }}>{cat.name}</span>
+                      <span style={{ fontSize: '11px', opacity: 0.5, textTransform: 'capitalize' }}>{cat.type}</span>
+                    </div>
                   </div>
                   <div className="txn-actions">
-                    <button className="txn-edit-btn" title="Edit">
+                    <button className="txn-edit-btn" title="Edit" onClick={() => handleEditCategory(cat)}>
                       <Pencil size={16} />
                     </button>
-                    <button className="txn-delete-btn" title="Delete">
+                    <button className="txn-delete-btn" title="Delete" onClick={() => handleDeleteCategory(cat.id)}>
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -148,8 +307,13 @@ function Settings() {
                 </div>
               ))}
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-                <button className="primary-btn" style={{ gap: '8px' }}>
-                  <Save size={18} /> Update Preferences
+                <button
+                  className="primary-btn"
+                  style={{ gap: '8px' }}
+                  onClick={handleNotificationsSave}
+                  disabled={loading}
+                >
+                  <Save size={18} /> {loading ? 'Updating...' : 'Update Preferences'}
                 </button>
               </div>
             </div>
@@ -162,22 +326,53 @@ function Settings() {
             <div style={{ display: 'grid', gap: '20px' }}>
               <div>
                 <label>Current Password</label>
-                <input type="password" className="modal-input" placeholder="••••••••" />
+                <input
+                  type="password"
+                  className="modal-input"
+                  placeholder="••••••••"
+                  value={security.currentPassword}
+                  onChange={(e) => setSecurity({ ...security, currentPassword: e.target.value })}
+                />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label>New Password</label>
-                  <input type="password" className="modal-input" placeholder="Enter new password" />
+                  <input
+                    type="password"
+                    className="modal-input"
+                    placeholder="Enter new password"
+                    value={security.newPassword}
+                    onChange={(e) => setSecurity({ ...security, newPassword: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label>Confirm Password</label>
-                  <input type="password" className="modal-input" placeholder="Confirm new password" />
+                  <input
+                    type="password"
+                    className="modal-input"
+                    placeholder="Confirm new password"
+                    value={security.confirmPassword}
+                    onChange={(e) => setSecurity({ ...security, confirmPassword: e.target.value })}
+                  />
                 </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+                <button
+                  className="primary-btn"
+                  style={{ gap: '8px' }}
+                  onClick={handlePasswordChange}
+                  disabled={loading || !security.currentPassword || !security.newPassword}
+                >
+                  <Shield size={18} /> {loading ? 'Changing...' : 'Change Password'}
+                </button>
               </div>
               <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px', marginTop: '12px' }}>
                 <h5 style={{ color: '#ef4444', marginBottom: '8px' }}>Danger Zone</h5>
                 <p style={{ fontSize: '13px', opacity: 0.8, marginBottom: '12px' }}>Permanently delete your account and all associated data. This action cannot be undone.</p>
-                <button style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}>
+                <button
+                  style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+                  onClick={handleDeleteAccount}
+                >
                   Delete Account
                 </button>
               </div>
@@ -241,6 +436,14 @@ function Settings() {
           {renderContent()}
         </div>
       </div>
+
+      {isCategoryModalOpen && (
+        <CategoryModal
+          category={editingCategory}
+          onClose={() => setIsCategoryModalOpen(false)}
+          onSave={saveCategory}
+        />
+      )}
     </main>
   );
 }

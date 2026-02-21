@@ -145,19 +145,24 @@ exports.forgotPassword = async (req, res) => {
     );
 
     // 📧 Send OTP via email
-    await transporter.sendMail({
-  from: `"TaxPal Support" <${process.env.EMAIL_USER}>`,
-  to: email,
-  subject: "Your Password Reset OTP",
-  html: `
-    <h2>Password Reset OTP</h2>
-    <p>Your OTP is:</p>
-    <h1>${otp}</h1>
-    <p>This OTP is valid for 10 minutes.</p>
-  `,
-});
+    console.log(`Attempting to send OTP to ${email}...`);
+    const info = await transporter.sendMail({
+      from: `"TaxPal Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your Password Reset OTP",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; borderRadius: 10px;">
+          <h2 style="color: #3b82f6;">TaxPal Password Reset</h2>
+          <p>You requested a password reset. Use the following dynamic OTP to proceed:</p>
+          <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px;">
+            <h1 style="letter-spacing: 5px; color: #1f2937; margin: 0;">${otp}</h1>
+          </div>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">This OTP is valid for 10 minutes. If you didn't request this, please ignore this email.</p>
+        </div>
+      `,
+    });
 
-
+    console.log("Email sent successfully info:", info.messageId);
     res.json({ message: "OTP sent to your email" });
 
   } catch (err) {
