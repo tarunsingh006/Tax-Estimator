@@ -51,6 +51,25 @@ exports.register = async (req, res) => {
       ]
     );
 
+    // Seed default categories for new user
+    const newUser = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+    const newUserId = newUser[0][0].id;
+    const defaultCategories = [
+      ['Salary', '#22c55e', 'income'],
+      ['Freelance', '#3b82f6', 'income'],
+      ['Business Expenses', '#ef4444', 'expense'],
+      ['Office Rent', '#f97316', 'expense'],
+      ['Software Subscriptions', '#8b5cf6', 'expense'],
+      ['Food & Dining', '#ec4899', 'expense'],
+      ['Transport', '#14b8a6', 'expense'],
+    ];
+    for (const [name, color, type] of defaultCategories) {
+      await db.query(
+        "INSERT INTO categories (user_id, name, color, type) VALUES (?, ?, ?, ?)",
+        [newUserId, name, color, type]
+      );
+    }
+
     res.status(201).json({ message: "User registered successfully" });
 
   } catch (err) {
