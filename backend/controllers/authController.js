@@ -147,7 +147,7 @@ exports.forgotPassword = async (req, res) => {
     // 📧 Send OTP via email
     console.log(`Attempting to send OTP to ${email}...`);
     const info = await transporter.sendMail({
-      from: `"TaxPal Support" <${process.env.EMAIL_USER}>`,
+      from: `"TaxPal Support" <onboarding@resend.dev>`,
       to: email,
       subject: "Your Password Reset OTP",
       html: `

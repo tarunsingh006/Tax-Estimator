@@ -28,7 +28,7 @@ async function sendAlertIfEnabled(userId, preferenceKey, mailOptions) {
             console.log(`Sending ${preferenceKey} alert to ${user.email}...`);
 
             await transporter.sendMail({
-                from: `"TaxPal Alerts" <${process.env.EMAIL_USER}>`,
+                from: `"TaxPal Alerts" <onboarding@resend.dev>`,
                 to: user.email,
                 ...mailOptions
             });
